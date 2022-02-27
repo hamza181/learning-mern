@@ -12,25 +12,52 @@ const DUMMY_PLACES = [
       lat: 40.7484445,
       lng: -73.9856646,
     },
-    address: 'asdf',
-    creator: 'u1'
+    address: "asdf",
+    creator: "u1",
   },
 ];
 
 router.get("/:pid", (req, res, next) => {
+  // get id from url
+  const placeId = req.params.pid;
 
-    // get id from url
-    const placeId = req.params.pid;
-
-    const place = DUMMY_PLACES.find(p => p.id === placeId);
+  const place = DUMMY_PLACES.find((p) => p.id === placeId);
 
   // res.send is used to send html
   // res.send('Hello from the backend!');
 
+  if (!place) {
+    // return res.status(404).json({
+    //   message: "Place not found.",
+    // });
+
+    const error = new Error('Could not find place')
+    error.code = 404;
+    throw error
+  }
   res.json({
     message: "Hello from the backend!",
-    place: place
+    place: place,
   });
+});
+
+// send data to frontend according to userid uid
+router.get("/user/:uid", (req, res, next) => {
+  const userId = req.params.uid;
+
+  const place = DUMMY_PLACES.find((p) => p.creator === userId);
+
+  if (!place) {
+    // return res.status(404).json({
+    //   message: "Place not found.",
+    // });
+
+    const error = new Error('Could not find place')
+    error.code = 404;
+    return next(error)
+  }
+
+  res.json({ place });
 });
 
 module.exports = router;

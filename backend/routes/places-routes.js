@@ -1,5 +1,7 @@
 const express = require("express");
 
+const HttpError = require('../models/http-error')
+
 // use router because in this file we have routes
 const router = express.Router();
 
@@ -31,9 +33,13 @@ router.get("/:pid", (req, res, next) => {
     //   message: "Place not found.",
     // });
 
-    const error = new Error('Could not find place')
-    error.code = 404;
-    throw error
+    // const error = new Error('Could not find place')
+    // error.code = 404;
+    // throw error
+
+    // get error from file we created http-error.js
+    throw new HttpError('Could not find place', 404)
+
   }
   res.json({
     message: "Hello from the backend!",
@@ -52,9 +58,11 @@ router.get("/user/:uid", (req, res, next) => {
     //   message: "Place not found.",
     // });
 
-    const error = new Error('Could not find place')
-    error.code = 404;
-    return next(error)
+    // const error = new Error('Could not find place')
+    // error.code = 404;
+    // return next(error)
+    
+    return next(new HttpError('Could not find place', 404))
   }
 
   res.json({ place });

@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoPractice = require("./mongo");
 
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
@@ -8,6 +9,8 @@ const HttpError = require("./models/http-error");
 const app = express();
 
 app.use(bodyParser.json());
+
+app.post('/mongo', mongoPractice.createProduct);
 
 // use route which we make in places-routes.js
 app.use("/api/places", placesRoutes);

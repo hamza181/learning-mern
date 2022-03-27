@@ -25,7 +25,24 @@ const createProduct = async (req, res, next) => {
   }
   res.json(newProduct);
 };
-const getProduct = (req, res, next) => {};
+const getProduct = async (req, res, next) => {
+  const client = new MongoClient(url);
+  let products;
+  try {
+    await client.connect();
+    const db = client.db();
+    products = await db
+      .collection("products")
+      .find()
+      .toArray()
+      .then(() => {
+        // client.close();
+      });
+  } catch (error) {
+    return res.json({ message: "an error occured" });
+  }
+  res.json(products);
+};
 
 exports.createProduct = createProduct;
 exports.getProduct = getProduct;

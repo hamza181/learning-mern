@@ -2,6 +2,7 @@ const HttpError = require("../models/http-error");
 const uuid = require("uuid/v4");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../utils/location");
+const Place = require("../models/place");
 
 let DUMMY_PLACES = [
   {
@@ -67,7 +68,7 @@ const getPlacesByUserId = (req, res, next) => {
 };
 
 // post function for create place
-const createPlace = (req, res, next) => {
+const createPlace = async (req, res, next) => {
   // for validation
   const errors = validationResult(req);
 
@@ -90,18 +91,39 @@ const createPlace = (req, res, next) => {
 
   let coordinates = getCoordsForAddress(address);
 
-  const createdPlace = {
-    // title: title
-    // equal to the below line
-    id: uuid(),
+  // const createdPlace = {
+  //   // title: title
+  //   // equal to the below line
+  //   id: uuid(),
+  //   title,
+  //   description,
+  //   location: coordinates,
+  //   address,
+  //   creator,
+  // };
+
+  const createdPlace = new Place({
     title,
     description,
     location: coordinates,
     address,
     creator,
-  };
+    image: 'https://images.unsplash.com/photo-1558981402-d8f9d9d8f9d2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60',
+  });
 
-  DUMMY_PLACES.push(createdPlace);
+  // store data in monogoDB
+  try {
+    await createdPlace.save();
+  } catch (err) {
+    const error = new HttpError(
+      "Creating place failed, please try again.",
+      500
+    );
+    return next(error);
+  }
+
+  // DUMMY_PLACES.push(createdPlace);
+  
 
   res.status(201).json({ place: createdPlace });
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongoPractice = require("./mongo");
+// const mongoPractice = require("./mongo");
+const mongoose = require("mongoose");
 
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
@@ -10,7 +11,8 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/mongo', mongoPractice.createProduct);
+// app.post('/mongo', mongoPractice.createProduct);
+// app.get('/mongo', mongoPractice.getProduct);
 
 // use route which we make in places-routes.js
 app.use("/api/places", placesRoutes);
@@ -32,4 +34,13 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occured" });
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://hamza:asdfasdf@cluster0.e8pup.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
